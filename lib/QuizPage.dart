@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_quiz_game/QuizManager.dart';
 import 'package:flutter_quiz_game/QuizMenu.dart';
-import 'package:flutter_quiz_game/ResutlPage.dart';
+import 'package:flutter_quiz_game/ResultPage.dart';
 
 class QuizPage extends StatefulWidget {
   const QuizPage({super.key, required this.level});
