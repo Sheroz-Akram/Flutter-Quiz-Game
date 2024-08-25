@@ -1,8 +1,10 @@
 import 'dart:math';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_quiz_game/QuizManager.dart';
 import 'package:flutter_quiz_game/QuizMenu.dart';
 import 'package:flutter_quiz_game/Quizs.dart';
+import 'package:flutter_quiz_game/ResutlPage.dart';
 
 class QuizPage extends StatefulWidget {
   const QuizPage({super.key, required this.level});
@@ -17,51 +19,31 @@ class _QuizPage extends State<QuizPage> {
   // Quiz Information
   int totalQuiz = 5;
   int currentQuiz = 0;
-  late var completeQuizList = [];
-
-  // Generate List of Random Number
-  List<int> generateUniqueRandomNumbers(int start, int end, int size) {
-    if (size <= 0) {
-      throw ArgumentError('Size must be greater than 0.');
-    }
-    if (start >= end) {
-      throw ArgumentError('Start must be less than end.');
-    }
-    if (size > (end - start)) {
-      throw ArgumentError(
-          'Size must be less than or equal to the range between start and end.');
-    }
-
-    Random random = Random();
-    Set<int> uniqueNumbers = <int>{};
-
-    while (uniqueNumbers.length < size) {
-      int number = random.nextInt(end - start) + start;
-      uniqueNumbers.add(number);
-    }
-
-    return uniqueNumbers.toList();
-  }
-
-  // Function to Load Quizes
-  void loadQuizs(int level, int Size) {
-    // Select Random Quiz from Level
-    var randomList =
-        generateUniqueRandomNumbers(0, quizQuestions[level - 1].length, Size);
-    // Choose Quiz from these random
-    List<dynamic> quizList = [];
-    for (var i = 0; i < randomList.length; i++) {
-      quizList.add(quizQuestions[level - 1][randomList[i]]);
-    }
-    setState(() {
-      completeQuizList = quizList;
-    });
-  }
+  int correctAnswerCount = 0;
+  bool isCorrectAnswer = false;
+  bool isAnswered = false;
+  late QuizManager quizManager;
+  List<Quiz> quizList = [];
 
   @override
   void initState() {
     super.initState();
-    loadQuizs(widget.level, totalQuiz);
+    // Load Quizs
+    quizManager = QuizManager(totalQuiz: totalQuiz, level: widget.level);
+    quizManager.loadQuizs();
+    setState(() {
+      quizList = quizManager.quizList;
+    });
+  }
+
+  // Display Message on Screen
+  void displayMessage(String message) {
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        backgroundColor: const Color.fromARGB(255, 51, 29, 116),
+        content: Text(
+          message,
+          style: const TextStyle(color: Colors.red),
+        )));
   }
 
   @override
@@ -69,45 +51,123 @@ class _QuizPage extends State<QuizPage> {
     return SafeArea(
       child: Scaffold(
           backgroundColor: const Color(0xFF251554),
-          body: Container(
-            margin: const EdgeInsets.only(top: 20, left: 20, right: 20),
-            width: MediaQuery.of(context).size.width,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Align(
-                    alignment: Alignment.bottomCenter,
-                    child: Text(
-                      "Level 0${widget.level}",
-                      style: const TextStyle(
-                          color: Colors.white,
-                          fontSize: 30,
-                          fontWeight: FontWeight.bold),
-                    )),
-                const SizedBox(
-                  height: 40,
-                ),
-                Text(
-                  "0${currentQuiz + 1}/0$totalQuiz",
-                  style: const TextStyle(
-                      color: Colors.green,
-                      fontSize: 17,
-                      fontWeight: FontWeight.bold),
-                ),
+          body: SingleChildScrollView(
+            child: Container(
+              margin: const EdgeInsets.only(top: 20, left: 20, right: 20),
+              width: MediaQuery.of(context).size.width,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Align(
+                      alignment: Alignment.bottomCenter,
+                      child: Text(
+                        "Level 0${widget.level}",
+                        style: const TextStyle(
+                            color: Colors.white,
+                            fontSize: 30,
+                            fontWeight: FontWeight.bold),
+                      )),
+                  const SizedBox(
+                    height: 40,
+                  ),
+                  Text(
+                    "0${currentQuiz + 1}/0$totalQuiz",
+                    style: const TextStyle(
+                        color: Colors.green,
+                        fontSize: 17,
+                        fontWeight: FontWeight.bold),
+                  ),
 
-                // Our Quiz Menu Here
-                completeQuizList.isEmpty
-                    ? const Text("Loading")
-                    : QuizMenu(
-                        question: completeQuizList[currentQuiz]['question'],
-                        options: completeQuizList[currentQuiz]['options'],
-                        correctAnswerIndex: completeQuizList[currentQuiz]
-                            ['correctIndex'],
-                        onOptionSelect: (isCorrectAnswer) {
-                          print("Status: $isCorrectAnswer");
-                        },
-                      ),
-              ],
+                  // Our Quiz Menu Here
+                  quizList.isEmpty
+                      ? const Text("Loading Quiz List")
+                      : QuizMenu(
+                          question: quizList[currentQuiz].question,
+                          options: quizList[currentQuiz].options,
+                          correctAnswerIndex:
+                              quizList[currentQuiz].correctOption,
+                          onOptionSelect: (answerStatus) {
+                            setState(() {
+                              if (!isAnswered) {
+                                isCorrectAnswer = answerStatus;
+                                if (answerStatus) {
+                                  correctAnswerCount++;
+                                }
+                              }
+                              isAnswered = true;
+                            });
+                          },
+                        ),
+
+                  const SizedBox(
+                    height: 30,
+                  ),
+
+                  // Button To Go To Next Quiz
+                  isAnswered
+                      ? Center(
+                          child: Column(
+                            children: [
+                              Image.asset(
+                                isCorrectAnswer
+                                    ? "assets/correct.png"
+                                    : "assets/wrong.png",
+                                width: 100,
+                              ),
+                              const SizedBox(
+                                height: 20,
+                              ),
+                              // Button to Move to Next Page
+                              ElevatedButton(
+                                  style: ButtonStyle(
+                                      side: WidgetStateProperty.all(
+                                        const BorderSide(color: Colors.white),
+                                      ),
+                                      backgroundColor:
+                                          const WidgetStatePropertyAll(
+                                              Color.fromARGB(
+                                                  255, 51, 29, 116))),
+                                  onPressed: () {
+                                    setState(() {
+                                      if (!isAnswered) {
+                                        displayMessage(
+                                            "Please Choose Option to Move to Next");
+                                      } else {
+                                        if (currentQuiz < totalQuiz - 1) {
+                                          currentQuiz++;
+                                          isAnswered = false;
+                                          isCorrectAnswer = false;
+                                        } else {
+                                          // Navigate to Result Screen
+                                          Navigator.pop(context);
+                                          Navigator.push(
+                                              context,
+                                              MaterialPageRoute(
+                                                  builder: (context) =>
+                                                      Resultpage(
+                                                          correctQuizCount:
+                                                              correctAnswerCount,
+                                                          totalCount:
+                                                              totalQuiz)));
+                                        }
+                                      }
+                                    });
+                                  },
+                                  child: const Text(
+                                    "Next Quiz",
+                                    style: TextStyle(
+                                        color: Colors.white,
+                                        fontSize: 20,
+                                        fontWeight: FontWeight.bold),
+                                  )),
+                            ],
+                          ),
+                        )
+                      : const SizedBox(
+                          height: 0,
+                        )
+                ],
+              ),
             ),
           )),
     );

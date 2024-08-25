@@ -27,10 +27,27 @@ class _QuizMenuState extends State<QuizMenu> {
   @override
   void initState() {
     super.initState();
+    resetQuizState();
+  }
+
+  @override
+  void didUpdateWidget(covariant QuizMenu oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    // Reset the quiz state when the widget is updated with new quiz details
+    if (oldWidget.question != widget.question) {
+      resetQuizState();
+    }
+  }
+
+  // Reset Quiz Menu to Orignal State
+  void resetQuizState() {
+    selectedOptionIndex = null;
+    isCorrectAnswer = false;
     optionStates = List<QuizOptionState>.filled(
         widget.options.length, QuizOptionState.unselected);
   }
 
+  // Ootion Selected in Quiz
   void handleOptionSelection(int index) {
     setState(() {
       if (selectedOptionIndex != null) {
