@@ -18,6 +18,15 @@ A Flutter-based quiz game app that presents random MCQs from a wide range of top
    ```bash
    git clone https://github.com/username/quiz-game-flutter.git
    cd quiz-game-flutter
+3. **Install Dependencies**:
+   ```bash
+   flutter pub get
+4. **Run Application**:
+   ```bash
+   flutter run
+5. **Build for Production**:
+   ```bash
+   flutter build apk --release
 
 ## Screenshots
 <img src="images/home.jpg" alt="Home Page" width="200"> <img src="images/correct.jpg" alt="Correct Quiz Image" width="200"> <img src="images/wrong.jpg" alt="Wrong Quiz Image" width="200"> <img src="images/result.jpg" alt="Quiz Result Page" width="200">
