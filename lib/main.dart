@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_quiz_game/QuizPage.dart';
+import 'package:flutter_quiz_game/WelcomePage.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 void main() {
@@ -23,8 +23,6 @@ class MyApp extends StatelessWidget {
           textTheme: GoogleFonts.signikaNegativeTextTheme(),
           useMaterial3: true,
         ),
-        home: const QuizPage(
-          level: 01,
-        ));
+        home: const WelcomePage());
   }
 }

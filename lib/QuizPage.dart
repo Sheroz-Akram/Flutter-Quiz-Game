@@ -137,16 +137,16 @@ class _QuizPage extends State<QuizPage> {
                                           isCorrectAnswer = false;
                                         } else {
                                           // Navigate to Result Screen
-                                          Navigator.pop(context);
-                                          Navigator.push(
+                                          Navigator.pushReplacement(
                                               context,
                                               MaterialPageRoute(
                                                   builder: (context) =>
                                                       Resultpage(
-                                                          correctQuizCount:
-                                                              correctAnswerCount,
-                                                          totalCount:
-                                                              totalQuiz)));
+                                                        correctQuizCount:
+                                                            correctAnswerCount,
+                                                        totalCount: totalQuiz,
+                                                        level: widget.level,
+                                                      )));
                                         }
                                       }
                                     });
