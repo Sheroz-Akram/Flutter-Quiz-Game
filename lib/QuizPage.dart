@@ -1,9 +1,6 @@
-import 'dart:math';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_quiz_game/QuizManager.dart';
 import 'package:flutter_quiz_game/QuizMenu.dart';
-import 'package:flutter_quiz_game/Quizs.dart';
 import 'package:flutter_quiz_game/ResutlPage.dart';
 
 class QuizPage extends StatefulWidget {
@@ -31,6 +28,7 @@ class _QuizPage extends State<QuizPage> {
     // Load Quizs
     quizManager = QuizManager(totalQuiz: totalQuiz, level: widget.level);
     quizManager.loadQuizs();
+    quizManager.shuffleQuizOptions();
     setState(() {
       quizList = quizManager.quizList;
     });

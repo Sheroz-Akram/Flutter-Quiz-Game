@@ -12,6 +12,30 @@ class Quiz {
   List<String> options;
   int correctOption;
 
+  get random => null;
+
+  // Shuffle Quiz Options
+  // Shuffle Quiz Options
+  void shuffleQuiz() {
+    // Create a list of indices from 0 to options.length - 1
+    List<int> indices = List.generate(options.length, (index) => index);
+
+    // Shuffle the indices
+    indices.shuffle();
+
+    // Store the new options and find the new index of the correct option
+    List<String> shuffledOptions = List<String>.from(options);
+    int newCorrectOption = indices.indexOf(correctOption);
+
+    for (int i = 0; i < options.length; i++) {
+      shuffledOptions[i] = options[indices[i]];
+    }
+
+    // Update options and correctOption with shuffled data
+    options = shuffledOptions;
+    correctOption = newCorrectOption;
+  }
+
   // Display Quiz Information
   void display() {
     print("Question: $question");
@@ -40,6 +64,13 @@ class QuizManager {
           question: currentQuiz['question'],
           options: currentQuiz['options'],
           correctOption: currentQuiz['correctIndex']));
+    }
+  }
+
+  // Shuffle Quiz Options
+  void shuffleQuizOptions() {
+    for (var quiz in quizList) {
+      quiz.shuffleQuiz();
     }
   }
 }
